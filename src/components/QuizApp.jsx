@@ -34,19 +34,21 @@ const QuizApp = () => {
   }];
 
   const questionElement = useRef();
-  // const answerBtn = useRef();
-  // const nextBtn = useRef();
+  
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const [selectedAnswers, setSelectedAnswers] = useState(null);
 
-  const selectAnswer = (correct) => {
-    if (correct) {
+  const selectAnswer = (answer) => {
+    setSelectedAnswers(answer);
+    if (answer.correct) {
       setScore(score + 1);
     }
+  };
 
+  /*
     const buttons = document.querySelectorAll('.answer-btn button');
     buttons.forEach(button => {
       button.disabled = true;
@@ -55,8 +57,8 @@ const QuizApp = () => {
       } else {
         button.classList.add("incorrect");
       }
-    });
-  }
+    }); */
+    
 
   const nextQuestion = () => {
     setSelectedAnswers(null);
@@ -86,13 +88,24 @@ const QuizApp = () => {
         ) : (
           <div>
             <h2 id="questions" ref={questionElement}>{questions[currentQuestionIndex].question}</h2>
-            <div id="answer-btn" className='answer-btn'>
-              {questions[currentQuestionIndex].answers.map((answer, index) => (
-                <button className='btn' key={index} data-correct={answer.correct} onClick={() => selectAnswer(answer.correct)}>
+            <div className="answer-btn">
+            {questions[currentQuestionIndex].answers.map((answer, index) => {
+              const isSelected = selectedAnswers === answer;
+              const isCorrect = answer.correct;
+              const isWrong = isSelected && !isCorrect;
+
+              return (
+                <button
+                  key={index}
+                  className={`btn ${isSelected ? (isCorrect ? 'correct' : 'incorrect') : ''} ${selectedAnswers && isCorrect ? 'correct' : ''}`}
+                  onClick={() => selectAnswer(answer)}
+                  disabled={selectedAnswers !== null} // Disable buttons after selecting an answer
+                >
                   {answer.text}
                 </button>
-              ))}
-            </div>
+              );
+            })}
+          </div>
             <button className='next-btn' onClick={nextQuestion}>Next</button>
           </div>
         )}
